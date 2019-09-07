@@ -202,6 +202,27 @@ describe( 'roadtrip', () => {
 			});
 		});
 
+		it( 'does not treat navigating to the same route with different trailing wildcard params as a noop', () => {
+			return createTestEnvironment( '/foo' ).then( window => {
+				const roadtrip = window.roadtrip;
+
+				const left = {};
+
+				roadtrip
+					.add( '/*', {
+						leave ( route ) {
+							left[ route.params['*'][0] ] = true;
+						}
+					})
+					.start();
+
+				return roadtrip.goto( '/bar' ).then( () => {
+					assert.ok( left.foo );
+					window.close();
+				});
+			});
+		});
+
 		it( 'does not treat navigating to the same route with different query params as a noop', () => {
 			return createTestEnvironment( '/foo?a=1' ).then( window => {
 				const roadtrip = window.roadtrip;

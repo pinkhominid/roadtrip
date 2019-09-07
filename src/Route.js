@@ -78,7 +78,7 @@ Route.prototype = {
 
 		const segments = pathname.split( '/' );
 
-		if ( segments.length !== this.segments.length ) {
+		if ( !segmentsMatch( segments, this.segments ) ) {
 			return false;
 		}
 
@@ -92,8 +92,9 @@ Route.prototype = {
 				params[ toMatch.slice( 1 ) ] = segment;
 			}
 
-			else if ( segment !== toMatch ) {
-				return false;
+			else if ( toMatch === '*' ) {
+				params[ toMatch ] = segments.slice(i);
+				break;
 			}
 		}
 
@@ -134,6 +135,10 @@ Route.prototype = {
 };
 
 function segmentsMatch ( a, b ) {
+	if ( b[ b.length-1 ] === '*' ) {
+		return segmentsMatch( a.slice( 0, b.length-1 ), b.slice( 0, b.length-1 ) );
+	}
+
 	if ( a.length !== b.length ) return;
 
 	let i = a.length;
